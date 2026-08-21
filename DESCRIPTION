@@ -2,11 +2,11 @@ Type: Package
 Package: catchonlyproj
 Title: Generate Catch Only Projection Report for West Coast Grounfish 
 Version: 1.2
-Authors@R: 
-    person(c("Chantel", "R."), "Wetzel", , "chantel.wetzel@noaa.gov", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-7573-8240")),
+Authors@R: c(
+    person("Chantel R.", "Wetzel", , "chantel.wetzel@noaa.gov", role = c("aut", "cre")),
     person("Ian J.", "Stewart", role = "aut"),
     person("Brian", "Langseth", role = "aut")
+    )
 Description: Package that can automates report file making for catch-only projections.
 License: GPL (>=3)
 URL: https://github.com/pfmc-assessments/catchonlyproj
