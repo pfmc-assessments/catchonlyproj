@@ -2,16 +2,21 @@
 % Please edit documentation in R/format_table.R
 \name{format_table}
 \alias{format_table}
-\title{A formatting function for reporting}
+\title{Format a projection table for a pdf report created using \code{quarto}}
 \usage{
-format_table(table, assess_year, sb_decimal_number = 2, hl_decimal_number = 0)
+format_table(
+  table,
+  assess_year = NULL,
+  sb_decimal_number = 2,
+  hl_decimal_number = 0
+)
 }
 \arguments{
 \item{table}{Data frame created by \code{\link[=get_model_values]{get_model_values()}} or \code{\link[=combine_tables]{combine_tables()}}
 to apply formatting to for reporting.}
 
 \item{assess_year}{A single numeric value that corresponds to the assessment
-year of the model}
+year of the model. Default is NULL.}
 
 \item{sb_decimal_number}{A single numeric value to determine the number of decimals
 to include for spawning biomass/output reporting in the formatted table object.
@@ -22,7 +27,8 @@ to include for OFL, ABC, and ACL reporting in the formatted table object. The
 default is 0.}
 }
 \description{
-A formatting function for reporting
+Create and format a projection table using created by \code{\link[=get_model_values]{get_model_values()}}
+or \code{\link[=combine_tables]{combine_tables()}}.
 }
 \author{
 Chantel Wetzel, Ian Taylor, Brian Langseth

@@ -1,11 +1,12 @@
-#' A formatting function for reporting
+#' Format a projection table for a pdf report created using `quarto`
 #'
-#'
+#' Create and format a projection table using created by [get_model_values()]
+#' or [combine_tables()].
 #'
 #' @param table Data frame created by [get_model_values()] or [combine_tables()]
 #'   to apply formatting to for reporting.
 #' @param assess_year  A single numeric value that corresponds to the assessment
-#'   year of the model
+#'   year of the model. Default is NULL.
 #' @param sb_decimal_number A single numeric value to determine the number of decimals
 #'   to include for spawning biomass/output reporting in the formatted table object.
 #'   The default is 2.
@@ -20,7 +21,7 @@
 #'
 format_table <- function(
   table,
-  assess_year,
+  assess_year = NULL,
   sb_decimal_number = 2,
   hl_decimal_number = 0
 ) {

@@ -4,22 +4,13 @@
 \alias{get_model_values}
 \title{Grab and combine model quantities for reporting}
 \usage{
-get_model_values(model, all_years, catch_years, proj_years)
+get_model_values(replist, buffer = NULL)
 }
 \arguments{
-\item{model}{Model list object created by \code{\link[r4ss:SS_output]{r4ss::SS_output()}} to summarize
+\item{replist}{Model list object created by \code{\link[r4ss:SS_output]{r4ss::SS_output()}} to summarize
 values from.}
 
-\item{all_years}{A numeric range of years (e.g., 2025:2036) that should correspond
-with the model projection years to pull the SSB and stock status.
-OFL, ABC, and ACL will be pull for each year.}
-
-\item{catch_years}{A numeric range of years where catches are pre-specified in
-the forecast.ss file for a Stock Synthesis model.}
-
-\item{proj_years}{A numeric range of years to summarize the OFL, ABC, and ACL
-from  a Stock Synthesis model object. The \code{proj_years} should be the years
-where there are no pre-specified catches in the forecast.ss file.}
+\item{buffer}{}
 }
 \value{
 data frame
@@ -31,10 +22,7 @@ Grab and combine model quantities for reporting
 \dontrun{
 model_output <- r4ss::SS_output("C:/model_directory")
 projection_table <- get_model_values(
-  model = model_output,
-  all_years = (model_output$endyr + 1):(model_output$endyr + model_output$N_forecast_yrs),
-  catch_years = (model_output$endyr + 1):(model_output$endyr + 4),
-  proj_years = (model_output$endyr + 5):(model_output$endyr + model_output$N_forecast_yrs)
+  replist = model_output
 )
 }
 }
