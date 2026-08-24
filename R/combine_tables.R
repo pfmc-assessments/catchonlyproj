@@ -36,12 +36,18 @@ combine_tables <- function(
   cop_model_table,
   assess_year
 ) {
-  dplyr::full_join(
+  join_tables <- dplyr::full_join(
     base_model_table |>
-      dplyr::select(-Buffer, -Buffer_from_ratio, -`Spawning Output`),
+      dplyr::select(-Buffer, -`Spawning Output`),
     cop_model_table,
     by = "Year"
-  ) |>
+  )
+  if ("Buffer_ratio" %in% colnames(join_tables)) {
+    join_tables <- join_tables |>
+      dplyr::select(-Buffer_ratio)
+  }
+
+  join_tables |>
     dplyr::rename(
       `OFL (yyyy)` = OFL.x,
       OFL = OFL.y,
