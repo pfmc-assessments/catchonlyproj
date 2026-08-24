@@ -30,9 +30,9 @@ get_model_values <- function(
   replist,
   buffer = NULL
 ) {
-  if (model$inputs$forecast) {
+  if (replist$inputs$forecast) {
     forecast <- r4ss::SS_readforecast(
-      file = file.path(model$inputs$dir, "forecast.ss"),
+      file = file.path(replist$inputs$dir, "forecast.ss"),
       verbose = FALSE
     )
   } else {
@@ -41,36 +41,36 @@ get_model_values <- function(
     )
   }
 
-  all_years <- (model$endyr + 1):(model$endyr + model$N_forecast_yrs)
+  all_years <- (replist$endyr + 1):(replist$endyr + replist$N_forecast_yrs)
   catch_years <- sort(unique(forecast$ForeCatch$year))
   proj_years <- all_years[!all_years %in% catch_years]
 
   # get realized catch from model output
-  catch <- model$derived_quants |>
+  catch <- replist$derived_quants |>
     dplyr::filter(Label %in% paste0("ForeCatch_", catch_years)) |>
     dplyr::reframe(
       Year = stringr::str_extract(Label, "\\d+") |> as.numeric(),
       Catch = Value
     )
-  ofl <- model$derived_quants |>
+  ofl <- replist$derived_quants |>
     dplyr::filter(Label %in% paste0("OFLCatch_", proj_years)) |>
     dplyr::reframe(
       Year = stringr::str_extract(Label, "\\d+") |> as.numeric(),
       OFL = Value
     )
-  acl <- model$derived_quants |>
+  acl <- replist$derived_quants |>
     dplyr::filter(Label %in% paste0("ForeCatch_", proj_years)) |>
     dplyr::reframe(
       Year = stringr::str_extract(Label, "\\d+") |> as.numeric(),
       ACL = Value
     )
-  sb <- model$derived_quants |>
+  sb <- replist$derived_quants |>
     dplyr::filter(Label %in% paste0("SSB_", all_years)) |>
     dplyr::reframe(
       Year = stringr::str_extract(Label, "\\d+") |> as.numeric(),
       SB = Value
     )
-  status <- model$derived_quants |>
+  status <- replist$derived_quants |>
     dplyr::filter(Label %in% paste0("Bratio_", all_years)) |>
     dplyr::reframe(
       Year = stringr::str_extract(Label, "\\d+") |> as.numeric(),
