@@ -19,6 +19,7 @@ Imports:
     gt,
     PEPtools,
     purrr,
+    quarto,
     r4ss,
     stringr,
     tidyselect
