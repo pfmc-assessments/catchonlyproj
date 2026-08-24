@@ -2,16 +2,9 @@
 #'
 #'
 #'
-#' @param model Model list object created by [r4ss::SS_output()] to summarize
+#' @param replist Model list object created by [r4ss::SS_output()] to summarize
 #'   values from.
-#' @param all_years A numeric range of years (e.g., 2025:2036) that should correspond
-#'   with the model projection years to pull the SSB and stock status.
-#'   OFL, ABC, and ACL will be pull for each year.
-#' @param catch_years A numeric range of years where catches are pre-specified in
-#'   the forecast.ss file for a Stock Synthesis model.
-#' @param proj_years A numeric range of years to summarize the OFL, ABC, and ACL
-#'   from  a Stock Synthesis model object. The `proj_years` should be the years
-#'   where there are no pre-specified catches in the forecast.ss file.
+#' @param buffer
 #'
 #'
 #' @author Chantel Wetzel, Ian Taylor, Brian Langseth
@@ -21,36 +14,28 @@
 #' \dontrun{
 #' model_output <- r4ss::SS_output("C:/model_directory")
 #' projection_table <- get_model_values(
-#'   model = model_output,
-#'   all_years = (model_output$endyr + 1):(model_output$endyr + model_output$N_forecast_yrs),
-#'   catch_years = (model_output$endyr + 1):(model_output$endyr + 4),
-#'   proj_years = (model_output$endyr + 5):(model_output$endyr + model_output$N_forecast_yrs)
+#'   replist = model_output
 #' )
 #' }
 #
 get_model_values <- function(
-  model,
-  all_years,
-  catch_years,
-  proj_years
+  replist,
+  buffer = NULL
 ) {
-  model_years <- model$startyr:(model$endyr + model$N_forecast_yrs)
-  if (any(!all_years %in% model_years)) {
+  if (model$inputs$forecast) {
+    forecast <- r4ss::SS_readforecast(
+      file = file.path(model$inputs$dir, "forecast.ss"),
+      verbose = FALSE
+    )
+  } else {
     cli::cli_abort(
-      "Years provided in the all_years that are not included in the model years"
+      "The model output from r4ss::SS_output has forecast = FALSE."
     )
   }
-  model_proj <- (model$endyr + 1):(model$endyr + model$N_forecast_yrs)
-  if (any(!proj_years %in% (model_proj))) {
-    cli::cli_abort(
-      "Years provided in the proj_years that are not included in the model projection years"
-    )
-  }
-  if (any(!catch_years %in% model_proj)) {
-    cli::cli_abort(
-      "Years provided in the catch_years that are not included in the model projection years"
-    )
-  }
+
+  all_years <- (model$endyr + 1):(model$endyr + model$N_forecast_yrs)
+  catch_years <- sort(unique(forecast$ForeCatch$year))
+  proj_years <- all_years[!all_years %in% catch_years]
 
   # get realized catch from model output
   catch <- model$derived_quants |>
@@ -84,14 +69,27 @@ get_model_values <- function(
       status = round(Value, 3)
     )
 
-  # get buffer from PEPtools function
-  Buffer <- PEPtools::get_buffer(
-    years = all_years,
-    sigma = sigma,
-    pstar = p_star,
-    verbose = FALSE
+  if (is.null(buffer)) {
+    Buffer <- data.frame(
+      Year = forecast$Flimitfraction_m$year,
+      Buffer = forecast$Flimitfraction_m$fraction
+    ) |>
+      dplyr::filter(Year %in% proj_years)
+  } else {
+    Buffer <- buffer
+    colnames(Buffer) <- c("Year", "Buffer")
+    Buffer <- Buffer |>
+      dplyr::filter(Year %in% proj_years)
+  }
+
+  buffer_ratio <- dplyr::left_join(
+    ofl,
+    acl
   ) |>
-    dplyr::rename(Year = year, Buffer = buffer) |>
+    dplyr::mutate(
+      Buffer_ratio = round(ACL / OFL, 3)
+    ) |>
+    dplyr::select(Year, Buffer_ratio) |>
     dplyr::filter(Year %in% proj_years)
 
   # combine all the tables above (joined by year)
@@ -102,20 +100,50 @@ get_model_values <- function(
     dplyr::arrange(Year) |>
     dplyr::relocate(Catch, .after = Year) |>
     dplyr::mutate(
-      Buffer_from_ratio = dplyr::case_when(
-        status >= model$btarg ~ round(ACL / OFL, 3),
-        .default = NA # ratio doesn't work for years with 40-10 adjustment
-      ),
+      ABC = Buffer * OFL,
+    ) |>
+    dplyr::relocate(
+      OFL,
+      .after = Year
+    ) |>
+    dplyr::relocate(
+      Buffer,
+      .after = OFL
+    ) |>
+    dplyr::relocate(
+      ABC,
       .after = Buffer
     ) |>
-    dplyr::mutate(
-      ABC = Buffer * OFL,
-      .after = Buffer_from_ratio
+    dplyr::relocate(
+      Catch,
+      .after = ABC
+    ) |>
+    dplyr::relocate(
+      ACL,
+      .after = Catch
+    ) |>
+    dplyr::relocate(
+      SB,
+      .after = ACL
+    ) |>
+    dplyr::relocate(
+      status,
+      .after = SB
     ) |>
     dplyr::rename(
       `Actual & Assumed Removals` = Catch,
       `Stock Status` = status,
       `Spawning Output` = SB,
     )
+  if (any(Buffer$Buffer != buffer_ratio$Buffer_ratio)) {
+    table <- dplyr::left_join(
+      table,
+      buffer_ratio
+    ) |>
+      dplyr::relocate(
+        Buffer_ratio,
+        .after = Buffer
+      )
+  }
   return(table)
 }
