@@ -30,6 +30,31 @@ default is 0.}
 Create and format a projection table using created by \code{\link[=get_model_values]{get_model_values()}}
 or \code{\link[=combine_tables]{combine_tables()}}.
 }
+\examples{
+\dontrun{
+base_model <- r4ss::SS_output("C:/model_directory/base_model")
+cop_model <- r4ss::SS_output("C:/model_directory/cop_model")
+
+projection_table_base_model <- get_model_values(
+  model = base_model
+)
+
+projection_table_cop <- get_model_values(
+  model = cop_model
+)
+output <- combine_tables(
+  base_model_table = projection_table_base_model,
+  cop_model = projection_table_cop,
+  assess_year = 2023
+)
+
+format_table(
+  table = output
+)
+}
+
+
+}
 \author{
 Chantel Wetzel, Ian Taylor, Brian Langseth
 }

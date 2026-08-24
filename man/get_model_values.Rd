@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_model_values.R
 \name{get_model_values}
 \alias{get_model_values}
-\title{Grab and combine model quantities for reporting}
+\title{Grab and return data frame of projection values from a list object}
 \usage{
 get_model_values(replist, buffer = NULL)
 }
@@ -10,13 +10,19 @@ get_model_values(replist, buffer = NULL)
 \item{replist}{Model list object created by \code{\link[r4ss:SS_output]{r4ss::SS_output()}} to summarize
 values from.}
 
-\item{buffer}{}
+\item{buffer}{Default NULL. If NULL, the function will return the buffer
+fraction from the model forecast file. A data frame created by
+\code{\link[PEPtools:get_buffer]{PEPtools::get_buffer()}} can be passed to the function via this
+arguement that will be used in the formatted data frame rather than the
+values in the forecast file.}
 }
 \value{
 data frame
 }
 \description{
-Grab and combine model quantities for reporting
+Pull out projection values using list items created by \code{\link[r4ss:SS_output]{r4ss::SS_output()}} and
+\code{\link[r4ss:SS_readforecast]{r4ss::SS_readforecast()}} (ran inside the function) and return formatted
+data frame.
 }
 \examples{
 \dontrun{

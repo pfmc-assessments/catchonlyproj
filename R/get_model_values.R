@@ -1,10 +1,18 @@
-#' Grab and combine model quantities for reporting
+#' Grab and return data frame of projection values from a list object
+#'
+#' Pull out projection values using list items created by [r4ss::SS_output()] and
+#' [r4ss::SS_readforecast()] (ran inside the function) and return formatted
+#' data frame.
 #'
 #'
 #'
 #' @param replist Model list object created by [r4ss::SS_output()] to summarize
 #'   values from.
-#' @param buffer
+#' @param buffer Default NULL. If NULL, the function will return the buffer
+#' fraction from the model forecast file. A data frame created by
+#' [PEPtools::get_buffer()] can be passed to the function via this
+#' arguement that will be used in the formatted data frame rather than the
+#' values in the forecast file.
 #'
 #'
 #' @author Chantel Wetzel, Ian Taylor, Brian Langseth
