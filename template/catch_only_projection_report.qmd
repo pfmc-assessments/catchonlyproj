@@ -39,7 +39,6 @@ params:
   sigma: 0.50
   p_star: 0.45
   spawn_output_units: "(millions of eggs)"
-  spawn_decimal_number: 0
 ---
 
 ```{r}
@@ -59,60 +58,18 @@ devtools::load_all("C:/Users/chantel.wetzel/Documents/github/catchonlyproj")
 #| warning: false
 #| message: false
 
-# Directory where the model or models are located for reading in
-model_dir <- params$model_dir
 base_model <- r4ss::SS_output(
-  dir = file.path(model_dir, "stock_assessment_model"),
+  dir = file.path(params$model_dir, "stock_assessment_model"),
   verbose = FALSE,
   printstats = FALSE, 
   hidewarn = TRUE) 
 
 cop_model <- r4ss::SS_output(
-  dir = file.path(model_dir, "cop_model"),
+  dir = file.path(params$model_dir, "cop_model"),
   verbose = FALSE,
   printstats = FALSE, 
   hidewarn = TRUE) 
 ```
-
-
-```{r}
-#| label: parameters
-#| echo: false
-#| warning: false
-#| message: false
-
-# Species name for use in the text
-species <- params$species
-# Species name with the first letter capitalized for use in the text
-Species <- stringr::str_to_sentence(params$species)
-# The year of benchmark or update model year that is being used in the COP
-assess_year <- base_model$endyr + 1
-# Current year for the text and grabbing values from the model object
-current_year <- as.numeric(format(Sys.Date(), "%Y"))
-final_proj_year <- base_model$endyr + base_model$nforecastyears
-# Category of the species (1, 2, or 3) used in the text
-category <- params$category
-# The adopted sigma for calculating the buffer and for use in the text
-sigma <- params$sigma
-# The adopted P* for calculating the buffer and for use in the text
-p_star <- params$p_star
-# Spawning output/biomass used in the text
-Spawn_text <- base_model$SpawnOutputLabel
-spawn_text <- tolower(Spawn_text)
-# Spawning units (e.g., mt, millions of eggs, etc.). Note that the r4ss
-# SpawnOutputLabel from [r4ss::SS_output()] is used to determine the 
-# spawning label (e.g., spawning biomass or spawning output).
-spawn_output_units <- params$spawn_output_units
-# The number of decimals to use in the table for the spawning biomass/output values.
-spawn_decimal_number <- params$spawn_decimal_number
-
-```
-
-
-:::{.landscape}
-
-
-This document details a catch-only projection for `r species`. The most recent assessment for `r species` was conducted in `r assess_year`. This analysis updates catches between `r assess_year` - `r current_year` to the removals by year from the Groundfish Multiyear Mortality (GEMM) report. The removals for `r current_year` and `r current_year + 1` were set equal to mortality projections provided by the Groundfish Management Team (GMT). For years `r current_year + 2` and beyond, removals were set equal to the projected Acceptable Biological Catch (ABC) based on a category `r category` time-varying $\sigma$ of `r sigma` and a P* value of `r p_star`.
 
 
 ```{r}
@@ -123,32 +80,14 @@ This document details a catch-only projection for `r species`. The most recent a
 #| message: false
 
 projection_table_base_model <- get_model_values(
-  model = base_model,
-  all_years = (base_model$endyr + 1):(base_model$endyr + base_model$N_forecast_yrs),
-  catch_years = (base_model$endyr + 1):(base_model$endyr + 2),
-  proj_years = (base_model$endyr + 3):(base_model$endyr + base_model$N_forecast_yrs)
+  replist = base_model
 )
 
 projection_table_cop <- get_model_values(
-  model = cop_model,
-  all_years = (cop_model$endyr + 1):(cop_model$endyr + cop_model$N_forecast_yrs),
-  catch_years = (cop_model$endyr + 1):(cop_model$endyr + 4),
-  proj_years = (cop_model$endyr + 5):(cop_model$endyr + cop_model$N_forecast_yrs)
+  replist = cop_model
 )
 
 ```
-
-```{r}
-#| label: caption
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-
-table_caption <- glue::glue("Original {assess_year} projection and new catch-only projection for OFLs (mt), buffer, ABCs (mt), actual & assumed catch (mt), ACLs (mt), {spawn_text} {spawn_output_units}, and stock status (fraction of unfished {spawn_text}) given the removals. The gray shading indicates values associated with the original {assess_year} assessment projection. In both the original model and the new projection, the removals for years beyond the values in the 'Actual & Assumed Removals' columns are the ACL values estimated from that model.")
-
-```
-
 
 
 ```{r}
@@ -166,7 +105,40 @@ combined_table <- combine_tables(
 
 ```
 
+
+```{r}
+#| label: text-parameters
+#| echo: false
+#| warning: false
+#| message: false
+
+# The year of benchmark or update model year that is being used in the COP
+assess_year <- base_model$endyr + 1
+# Current year for the text and grabbing values from the model object
+current_year <- as.numeric(format(Sys.Date(), "%Y"))
+# Spawning output/biomass used in the text
+spawn_text <- tolower(base_model$SpawnOutputLabel)
+
+```
+
+
+:::{.landscape}
+
+This document details a catch-only projection for `r params$species`. The most recent assessment for `r params$species` was conducted in `r assess_year`. This analysis updates catches between `r assess_year` - `r current_year` to the removals by year from the Groundfish Multiyear Mortality (GEMM) report. The removals for `r current_year` and `r current_year + 1` were set equal to mortality projections provided by the Groundfish Management Team (GMT). For years `r current_year + 2` and beyond, removals were set equal to the projected Acceptable Biological Catch (ABC) based on a category `r params$category` time-varying $\sigma$ of `r params$sigma` and a P* value of `r params$p_star`.
+
 \vspace{0.25in}
+
+```{r}
+#| label: caption
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+
+table_caption <- glue::glue("Original {assess_year} projection and new catch-only projection for OFLs (mt), buffer, ABCs (mt), actual & assumed catch (mt), ACLs (mt), {spawn_text} {params$spawn_output_units}, and stock status (fraction of unfished {spawn_text}) given the removals. The gray shading indicates values associated with the original {assess_year} assessment projection. In both the original model and the new projection, the removals for years beyond the values in the 'Actual & Assumed Removals' columns are the ACL values estimated from that model.")
+
+```
+
 
 ```{r}
 #| label: tbl-proj
