@@ -121,6 +121,9 @@ in the example below) and the revised projection model (called the `cop_model` b
 in the `model` code chunk located at the top of the quarto file.
 
 ```
+#| label: model
+#| warning: false
+#| message: false
 base_model_table <- catchonlyproj::get_output_table(
   dir = file.path(params$model_dir, "stock_assessment_model")
 )
@@ -201,6 +204,6 @@ catchonly::format_table(
 )
 ```
 
-Note that each example code chunk above, removed the `echo` line in order for the
+**Note that each example code chunk above, removed the `echo` line in order for the
 code to be shown here. The `echo: false` should be retained in the quarto file 
-to prevent the code from being shown in the rendered pdf.
+to prevent the code from being shown in the rendered pdf.**
