@@ -39,18 +39,9 @@ params:
   sigma: 0.50
   p_star: 0.45
   spawn_output_units: "(millions of eggs)"
+  sb_decimal_number: 0
+  hl_decimal_number: 0
 ---
-
-```{r}
-#| label: load-package
-#| echo: false
-#| warning: false
-#| message: false
-
-devtools::load_all("C:/Users/chantel.wetzel/Documents/github/catchonlyproj")
-
-```
-
 
 ```{r}
 #| label: model
@@ -58,34 +49,23 @@ devtools::load_all("C:/Users/chantel.wetzel/Documents/github/catchonlyproj")
 #| warning: false
 #| message: false
 
-base_model <- r4ss::SS_output(
-  dir = file.path(params$model_dir, "stock_assessment_model"),
-  verbose = FALSE,
-  printstats = FALSE, 
-  hidewarn = TRUE) 
-
-cop_model <- r4ss::SS_output(
-  dir = file.path(params$model_dir, "cop_model"),
-  verbose = FALSE,
-  printstats = FALSE, 
-  hidewarn = TRUE) 
+base_model_table <- catchonlyproj::get_output_table(
+  dir = file.path(params$model_dir, "stock_assessment_model")
+)
+cop_model_table <- catchonly::projget_output_table(
+  dir = file.path(params$model_dir, "cop_model")
+) 
 ```
 
-
 ```{r}
-#| label: get-model-values
+#| label: text-parameters
 #| echo: false
-#| eval: true
 #| warning: false
 #| message: false
 
-projection_table_base_model <- get_model_values(
-  replist = base_model
-)
-
-projection_table_cop <- get_model_values(
-  replist = cop_model
-)
+current_year <- as.numeric(format(Sys.Date(), "%Y"))
+spawn_text <- tolower(base_model_table$spawning_text)
+assess_year <- base_model_table$assess_year
 
 ```
 
@@ -97,34 +77,18 @@ projection_table_cop <- get_model_values(
 #| warning: false
 #| message: false
 
-combined_table <- combine_tables(
-  base_model_table = projection_table_base_model,
-  cop_model_table = projection_table_cop,
-  assess_year = 2023
+combined_table <- catchonly::combine_tables(
+  base_model_table = base_model_table$projection_values,
+  cop_model_table = cop_model_table$projection_values,
+  assess_year = assess_year
 )
-
-```
-
-
-```{r}
-#| label: text-parameters
-#| echo: false
-#| warning: false
-#| message: false
-
-# The year of benchmark or update model year that is being used in the COP
-assess_year <- base_model$endyr + 1
-# Current year for the text and grabbing values from the model object
-current_year <- as.numeric(format(Sys.Date(), "%Y"))
-# Spawning output/biomass used in the text
-spawn_text <- tolower(base_model$SpawnOutputLabel)
 
 ```
 
 
 :::{.landscape}
 
-This document details a catch-only projection for `r params$species`. The most recent assessment for `r params$species` was conducted in `r assess_year`. This analysis updates catches between `r assess_year` - `r current_year` to the removals by year from the Groundfish Multiyear Mortality (GEMM) report. The removals for `r current_year` and `r current_year + 1` were set equal to mortality projections provided by the Groundfish Management Team (GMT). For years `r current_year + 2` and beyond, removals were set equal to the projected Acceptable Biological Catch (ABC) based on a category `r params$category` time-varying $\sigma$ of `r params$sigma` and a P* value of `r params$p_star`.
+This document details a catch-only projection for `r params$species`. The most recent assessment for `r params$species` was conducted in `r assess_year`. This analysis updates catches between `r assess_year` - `r current_year` to the best information about observed removals as provided by the Groundfish Management Team (GMT). The removals for `r current_year` and `r current_year + 1` mortality projections provided by the GMT for each fleet in the model. For years `r current_year + 2` and beyond, removals were set equal to the projected Annual Catch Limit (ACL) based on a category `r params$category` time-varying $\sigma$ of `r params$sigma` and a P* value of `r params$p_star`.
 
 \vspace{0.25in}
 
@@ -148,15 +112,15 @@ table_caption <- glue::glue("Original {assess_year} projection and new catch-onl
 #| message: false
 #| tbl-cap: !expr table_caption
 
-format_table(
+catchonly::format_table(
   table = combined_table,
-  assess_year = 2023,
-  sb_decimal_number = 0,
-  hl_decimal_number = 0
+  assess_year = assess_year,
+  sb_decimal_number = params$sb_decimal_number,
+  hl_decimal_number = params$hl_decimal_number
 )
 
 
 ```
 
 
-
+:::
