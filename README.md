@@ -37,7 +37,7 @@ First create a empty directory folder where you want to save the template and
 resulting rendered pdf document. This folder needs to be empty.
 
 ```r
-create.dir("C:/assessments/2027/cop_my_species")
+dir.create("C:/assessments/2027/cop_my_species")
 ```
 
 Once the folder is created run the following command in your R terminal:
@@ -127,7 +127,7 @@ in the `model` code chunk located at the top of the quarto file.
 base_model_table <- catchonlyproj::get_output_table(
   dir = file.path(params$model_dir, "stock_assessment_model")
 )
-cop_model_table <- catchonly::projget_output_table(
+cop_model_table <- catchonlyproj::get_output_table(
   dir = file.path(params$model_dir, "cop_model")
 )
 ```
@@ -151,10 +151,10 @@ code chunk with revised text and label, and add new table code chunk with revise
 base_model_table <- catchonlyproj::get_output_table(
   dir = file.path(params$model_dir, "stock_assessment_model")
 )
-cop_model_table <- catchonly::projget_output_table(
+cop_model_table <- catchonlyproj::get_output_table(
   dir = file.path(params$model_dir, "cop_model_1")
 ) 
-cop_model_table_option_2 <- catchonly::projget_output_table(
+cop_model_table_option_2 <- catchonlyproj::get_output_table(
   dir = file.path(params$model_dir, "cop_model_2")
 )
 ```
@@ -165,13 +165,13 @@ cop_model_table_option_2 <- catchonly::projget_output_table(
 #| warning: false
 #| message: false
 
-combined_table <- catchonly::combine_tables(
+combined_table <- catchonlyproj::combine_tables(
   base_model_table = base_model_table$projection_values,
   cop_model_table = cop_model_table$projection_values,
   assess_year = assess_year
 )
 
-combined_table_option_2 <- catchonly::combine_tables(
+combined_table_option_2 <- catchonlyproj::combine_tables(
   base_model_table = base_model_table$projection_values,
   cop_model_table = cop_model_table_option_2$projection_values,
   assess_year = assess_year
@@ -196,7 +196,7 @@ table_caption <- glue::glue("Original {assess_year} projection and new catch-onl
 #| message: false
 #| tbl-cap: !expr table_caption
 
-catchonly::format_table(
+catchonlyproj::format_table(
   table = combined_table_option_2,
   assess_year = assess_year,
   sb_decimal_number = params$sb_decimal_number,
