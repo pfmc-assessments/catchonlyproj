@@ -12,6 +12,7 @@
 #' \dontrun{
 #'   output_table <- get_output_table(
 #'     dir = "C:/assessments/2027/my_model"
+#'   )
 #' }
 #'
 get_output_table <- function(dir) {

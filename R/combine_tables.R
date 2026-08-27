@@ -4,7 +4,7 @@
 #'
 #' @param base_model_table Data frame created by [get_model_values()]. This should
 #'   be the base model.
-#' @param cop_table Data frame created by [get_model_values()]. This should be the
+#' @param cop_model_table Data frame created by [get_model_values()]. This should be the
 #'   catch-only projection model.
 #' @param assess_year  A single numeric value that corresponds to the assessment
 #'   year of the model
@@ -26,7 +26,7 @@
 #' )
 #' output <- combine_tables(
 #'   base_model_table = projection_table_base_model,
-#'   cop_model = projection_table_cop,
+#'   cop_model_table = projection_table_cop,
 #'   assess_year = 2023
 #' )
 #' }
@@ -58,7 +58,7 @@ combine_tables <- function(
       `Actual & Assumed Removals (yyyy)` = `Actual & Assumed Removals.x`,
       `Actual & Assumed Removals` = `Actual & Assumed Removals.y`,
       `Stock Status (yyyy)` = `Stock Status.x`,
-      `Stock Status` = `Stock Status.y`,
+      `Stock Status` = `Stock Status.y`
     ) |>
     dplyr::select(
       c(

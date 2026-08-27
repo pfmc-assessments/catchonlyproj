@@ -44,7 +44,7 @@ projection_table_cop <- get_model_values(
 )
 output <- combine_tables(
   base_model_table = projection_table_base_model,
-  cop_model = projection_table_cop,
+  cop_model_table = projection_table_cop,
   assess_year = 2023
 )
 

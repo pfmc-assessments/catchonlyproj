@@ -31,7 +31,7 @@
 #' )
 #' output <- combine_tables(
 #'   base_model_table = projection_table_base_model,
-#'   cop_model = projection_table_cop,
+#'   cop_model_table = projection_table_cop,
 #'   assess_year = 2023
 #' )
 #'
@@ -68,7 +68,7 @@ format_table <- function(
       align = "center"
     ) |>
     gt::cols_width(
-      everything() ~ px(65)
+      tidyselect::everything() ~ px(65)
     ) |>
     gt::data_color(
       columns = tidyselect::contains(paste(assess_year)),

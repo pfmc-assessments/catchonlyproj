@@ -11,7 +11,7 @@
 #' @param buffer Default NULL. If NULL, the function will return the buffer
 #' fraction from the model forecast file. A data frame created by
 #' [PEPtools::get_buffer()] can be passed to the function via this
-#' arguement that will be used in the formatted data frame rather than the
+#' argument that will be used in the formatted data frame rather than the
 #' values in the forecast file.
 #'
 #'
@@ -108,7 +108,7 @@ get_model_values <- function(
     dplyr::arrange(Year) |>
     dplyr::relocate(Catch, .after = Year) |>
     dplyr::mutate(
-      ABC = Buffer * OFL,
+      ABC = Buffer * OFL
     ) |>
     dplyr::relocate(
       OFL,
@@ -141,7 +141,7 @@ get_model_values <- function(
     dplyr::rename(
       `Actual & Assumed Removals` = Catch,
       `Stock Status` = status,
-      `Spawning Output` = SB,
+      `Spawning Output` = SB
     )
   if (any(Buffer$Buffer != buffer_ratio$Buffer_ratio)) {
     table <- dplyr::left_join(

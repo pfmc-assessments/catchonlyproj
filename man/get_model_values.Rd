@@ -13,7 +13,7 @@ values from.}
 \item{buffer}{Default NULL. If NULL, the function will return the buffer
 fraction from the model forecast file. A data frame created by
 \code{\link[PEPtools:get_buffer]{PEPtools::get_buffer()}} can be passed to the function via this
-arguement that will be used in the formatted data frame rather than the
+argument that will be used in the formatted data frame rather than the
 values in the forecast file.}
 }
 \value{

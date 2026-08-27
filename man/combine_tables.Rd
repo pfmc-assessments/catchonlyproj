@@ -10,11 +10,11 @@ combine_tables(base_model_table, cop_model_table, assess_year)
 \item{base_model_table}{Data frame created by \code{\link[=get_model_values]{get_model_values()}}. This should
 be the base model.}
 
+\item{cop_model_table}{Data frame created by \code{\link[=get_model_values]{get_model_values()}}. This should be the
+catch-only projection model.}
+
 \item{assess_year}{A single numeric value that corresponds to the assessment
 year of the model}
-
-\item{cop_table}{Data frame created by \code{\link[=get_model_values]{get_model_values()}}. This should be the
-catch-only projection model.}
 }
 \description{
 A helper function to combine two projection tables
@@ -33,7 +33,7 @@ projection_table_cop <- get_model_values(
 )
 output <- combine_tables(
   base_model_table = projection_table_base_model,
-  cop_model = projection_table_cop,
+  cop_model_table = projection_table_cop,
   assess_year = 2023
 )
 }

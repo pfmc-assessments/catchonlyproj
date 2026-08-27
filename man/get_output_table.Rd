@@ -18,6 +18,7 @@ and \code{\link[=get_model_values]{get_model_values()}}.
 \dontrun{
   output_table <- get_output_table(
     dir = "C:/assessments/2027/my_model"
+  )
 }
 
 }
